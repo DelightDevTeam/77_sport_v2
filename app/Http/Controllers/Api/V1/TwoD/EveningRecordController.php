@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1\TwoD;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\ApiEveningLotteryAdminLogService;
 use Illuminate\Http\JsonResponse;
+
 class EveningRecordController extends Controller
 {
     protected $lotteryAdminLogService;
-
 
     public function __construct(ApiEveningLotteryAdminLogService $lotteryAdminLogService)
     {
@@ -37,9 +36,8 @@ class EveningRecordController extends Controller
             // If an error occurs, return an error response
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to retrieve data: ' . $e->getMessage(),
+                'message' => 'Failed to retrieve data: '.$e->getMessage(),
             ], 500);
         }
     }
-
 }

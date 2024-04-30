@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('lottery_match_pivot', function (Blueprint $table) {
             $table->id();
-        $table->unsignedBigInteger('threed_match_time_id');
-        $table->unsignedBigInteger('threed_lottery_id');
-        $table->string('digit_entry', 3); // Stores the 3-digit entry as a string
-        $table->integer('sub_amount')->default(0);
-        $table->boolean('prize_sent')->default(false);
-        $table->timestamps();
-        // Define foreign keys and constraints
-        $table->foreign('threed_match_time_id')->references('id')->on('threed_match_times')->onDelete('cascade');
-        $table->foreign('threed_lottery_id')->references('id')->on('threed_lotteries')->onDelete('cascade');
+            $table->unsignedBigInteger('threed_match_time_id');
+            $table->unsignedBigInteger('threed_lottery_id');
+            $table->string('digit_entry', 3); // Stores the 3-digit entry as a string
+            $table->integer('sub_amount')->default(0);
+            $table->boolean('prize_sent')->default(false);
+            $table->timestamps();
+            // Define foreign keys and constraints
+            $table->foreign('threed_match_time_id')->references('id')->on('threed_match_times')->onDelete('cascade');
+            $table->foreign('threed_lottery_id')->references('id')->on('threed_lotteries')->onDelete('cascade');
         });
     }
 
@@ -29,17 +29,17 @@ return new class extends Migration
      * Reverse the migrations.
      */
     public function down()
-{
-    Schema::table('lottery_match_pivot', function (Blueprint $table) {
-        // Replace 'threed_lottery_id' with the actual column name in your pivot table if different
-        $table->dropForeign(['threed_lottery_id']); 
-    });
+    {
+        Schema::table('lottery_match_pivot', function (Blueprint $table) {
+            // Replace 'threed_lottery_id' with the actual column name in your pivot table if different
+            $table->dropForeign(['threed_lottery_id']);
+        });
 
-    Schema::dropIfExists('lottery_match_pivot');
-}
+        Schema::dropIfExists('lottery_match_pivot');
+    }
 
-//   public function down()
-// {
-//     Schema::dropIfExists('match_lottery_pivot');
-// }
+    //   public function down()
+    // {
+    //     Schema::dropIfExists('match_lottery_pivot');
+    // }
 };

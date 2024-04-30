@@ -2,26 +2,26 @@
 
 namespace App\Http\Controllers\Api\V1\TwoD;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\TwoDPlayRequest;
+use App\Models\Admin\CloseTwoDigit;
+use App\Models\Admin\HeadDigit;
+use App\Models\Admin\LotteryMatch;
+use App\Models\Admin\TwoDigit;
+use App\Models\Admin\TwoDLimit;
+use App\Models\LotteryTwoDigitCopy;
+use App\Models\Two\TwodGameResult;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Services\TwoDLotteryService;
 use App\Services\TwoDService;
 use App\Traits\HttpResponses;
-use App\Models\Admin\TwoDigit;
-use App\Models\Admin\HeadDigit;
-use App\Models\Admin\TwoDLimit;
 use Illuminate\Http\JsonResponse;
-use App\Models\Admin\LotteryMatch;
-use App\Models\Two\TwodGameResult;
-use App\Models\Admin\CloseTwoDigit;
-use App\Models\LotteryTwoDigitCopy;
-use App\Http\Controllers\Controller;
-use App\Services\TwoDLotteryService;
-use App\Http\Requests\TwoDPlayRequest;
-use App\Models\TwoD\LotteryTwoDigitPivot;
+use Illuminate\Http\Request;
 
 class TwoPlayController extends Controller
 {
     use HttpResponses;
+
     protected $lotteryService;
 
     public function __construct(TwoDLotteryService $lotteryService)
@@ -29,98 +29,97 @@ class TwoPlayController extends Controller
         $this->middleware('auth'); // Ensure user is authenticated
         $this->lotteryService = $lotteryService;
     }
+
     public function index()
     {
         $digits = TwoDigit::all();
         $break = TwoDLimit::latest()->first()->two_d_limit;
-        foreach($digits as $digit)
-        {
+        foreach ($digits as $digit) {
             $totalAmount = LotteryTwoDigitCopy::where('two_digit_id', $digit->id)->sum('sub_amount');
-            $remaining = $break-$totalAmount;
+            $remaining = $break - $totalAmount;
             $digit->remaining = $remaining;
         }
         $lottery_matches = LotteryMatch::where('id', 1)->whereNotNull('is_active')->first(['id', 'match_name', 'is_active']);
+
         return $this->success([
             'break' => $break,
             'two_digits' => $digits,
-            'lottery_matches' => $lottery_matches
+            'lottery_matches' => $lottery_matches,
         ]);
     }
 
     public function play(TwoDPlayRequest $request, TwoDService $twoDService): JsonResponse
     {
-    $currentDate = TwodGameResult::where('status', 'open')->first();
+        $currentDate = TwodGameResult::where('status', 'open')->first();
 
-    
-    // If no result date is found or it's closed, return an error
-    if (!$currentDate || $currentDate->status === 'closed') {
-        return response()->json([
-            'success' => false,
-            'message' => 'This 2D lottery match is closed for at this time. Welcome back Next Time!',
-        ], 401);
-    }
-    //Log::info($request->all());
+        // If no result date is found or it's closed, return an error
+        if (! $currentDate || $currentDate->status === 'closed') {
+            return response()->json([
+                'success' => false,
+                'message' => 'This 2D lottery match is closed for at this time. Welcome back Next Time!',
+            ], 401);
+        }
+        //Log::info($request->all());
 
-    // Retrieve the validated data from the request
-    $totalAmount = $request->input('totalAmount');
-    $amounts = $request->input('amounts');
+        // Retrieve the validated data from the request
+        $totalAmount = $request->input('totalAmount');
+        $amounts = $request->input('amounts');
 
-    try {
-        // Fetch all head digits not allowed
-        $closedHeadDigits = HeadDigit::query()
-            ->get(['digit_one', 'digit_two', 'digit_three'])
-            ->flatMap(function ($item) {
-                return [$item->digit_one, $item->digit_two, $item->digit_three];
-            })
-            ->unique()
-            ->all();
+        try {
+            // Fetch all head digits not allowed
+            $closedHeadDigits = HeadDigit::query()
+                ->get(['digit_one', 'digit_two', 'digit_three'])
+                ->flatMap(function ($item) {
+                    return [$item->digit_one, $item->digit_two, $item->digit_three];
+                })
+                ->unique()
+                ->all();
 
-        // return response()->json($closedHeadDigits);
-        foreach ($amounts as $amount) {
-            $headDigitOfSelected = substr(sprintf('%02d', $amount['num']), 0, 1); // Ensure 
-            if (in_array($headDigitOfSelected, $closedHeadDigits)) {
-                return response()->json(['message' => "ထိပ်ဂဏန်း '{$headDigitOfSelected}'  ကိုပိတ်ထားသောကြောင့် ကံစမ်း၍ မရနိုင်ပါ ၊ ကျေးဇူးပြု၍ ဂဏန်းပြန်ရွှေးချယ်ပါ။ "], 401);
+            // return response()->json($closedHeadDigits);
+            foreach ($amounts as $amount) {
+                $headDigitOfSelected = substr(sprintf('%02d', $amount['num']), 0, 1); // Ensure
+                if (in_array($headDigitOfSelected, $closedHeadDigits)) {
+                    return response()->json(['message' => "ထိပ်ဂဏန်း '{$headDigitOfSelected}'  ကိုပိတ်ထားသောကြောင့် ကံစမ်း၍ မရနိုင်ပါ ၊ ကျေးဇူးပြု၍ ဂဏန်းပြန်ရွှေးချယ်ပါ။ "], 401);
+                }
             }
-        }
 
-        $closedTwoDigits = CloseTwoDigit::query()
-            ->pluck('digit')
-            ->map(function ($digit) {
-                // Ensure formatting as a two-digit string
-                return sprintf('%02d', $digit);
-            })
-            ->unique()
-            ->filter()
-            ->values()
-            ->all();
+            $closedTwoDigits = CloseTwoDigit::query()
+                ->pluck('digit')
+                ->map(function ($digit) {
+                    // Ensure formatting as a two-digit string
+                    return sprintf('%02d', $digit);
+                })
+                ->unique()
+                ->filter()
+                ->values()
+                ->all();
 
-        foreach ($request->input('amounts') as $amount) {
-            $twoDigitOfSelected = sprintf('%02d', $amount['num']); // Ensure two-digit format
-            if (in_array($twoDigitOfSelected, $closedTwoDigits)) {
-                return response()->json(['message' => "2D -  '{$twoDigitOfSelected}'  ကိုပိတ်ထားသောကြောင့် ကံစမ်း၍ မရနိုင်ပါ ၊ ကျေးဇူးပြု၍ ဂဏန်းပြန်ရွှေးချယ်ပါ။ "], 401);
+            foreach ($request->input('amounts') as $amount) {
+                $twoDigitOfSelected = sprintf('%02d', $amount['num']); // Ensure two-digit format
+                if (in_array($twoDigitOfSelected, $closedTwoDigits)) {
+                    return response()->json(['message' => "2D -  '{$twoDigitOfSelected}'  ကိုပိတ်ထားသောကြောင့် ကံစမ်း၍ မရနိုင်ပါ ၊ ကျေးဇူးပြု၍ ဂဏန်းပြန်ရွှေးချယ်ပါ။ "], 401);
+                }
             }
+
+            $result = $twoDService->play($totalAmount, $amounts);
+            if ($result === 'Insufficient funds.') {
+                // Insufficient funds message
+                return response()->json(['message' => 'လက်ကျန်ငွေ မလုံလောက်ပါ။'], 401);
+            }
+            if (is_array($result) && ! empty($result)) {
+                $digitStrings = collect($result)->implode(', '); // Over-limit digits
+                $message = "သင့်ရွှေးချယ်ထားသော {$digitStrings} ဂဏန်းမှာ သတ်မှတ် အမောင့်ထက်ကျော်လွန်ပါသောကြောင့် ကံစမ်း၍မရနိုင်ပါ။";
+
+                return response()->json(['message' => $message], 401);
+            }
+
+            // If $result is neither "Insufficient funds." nor an array, assuming success.
+            return $this->success($result);
+
+        } catch (\Exception $e) {
+            // In case of an exception, return an error response
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 401);
         }
-
-       
-
-        $result = $twoDService->play($totalAmount, $amounts);
-         if ($result === "Insufficient funds.") {
-            // Insufficient funds message
-            return response()->json(['message' => "လက်ကျန်ငွေ မလုံလောက်ပါ။"], 401);
-        }
-        if (is_array($result) && !empty($result)) {
-            $digitStrings = collect($result)->implode(", "); // Over-limit digits
-            $message = "သင့်ရွှေးချယ်ထားသော {$digitStrings} ဂဏန်းမှာ သတ်မှတ် အမောင့်ထက်ကျော်လွန်ပါသောကြောင့် ကံစမ်း၍မရနိုင်ပါ။";
-            return response()->json(['message' => $message], 401);
-        }
-
-        // If $result is neither "Insufficient funds." nor an array, assuming success.
-        return $this->success($result);
-
-    } catch (\Exception $e) {
-        // In case of an exception, return an error response
-        return response()->json(['success' => false, 'message' => $e->getMessage()], 401);
-    }
     }
 
     public function playHistory(): JsonResponse
@@ -135,26 +134,27 @@ class TwoPlayController extends Controller
             'history4pm' => $history4pm,
         ]);
     }
-    // for admin 
+
+    // for admin
     public function playHistoryForAdmin(): JsonResponse
-{
-    // Example: Fetching history for all users
-    $history12pm = $this->lotteryService->getAllUsersTwoDigits('morning');
-    $history4pm = $this->lotteryService->getAllUsersTwoDigits('evening');
+    {
+        // Example: Fetching history for all users
+        $history12pm = $this->lotteryService->getAllUsersTwoDigits('morning');
+        $history4pm = $this->lotteryService->getAllUsersTwoDigits('evening');
 
-    return response()->json([
-        'history12pm' => $history12pm,
-        'history4pm' => $history4pm,
-    ]);
-}
+        return response()->json([
+            'history12pm' => $history12pm,
+            'history4pm' => $history4pm,
+        ]);
+    }
 
-    
     public function TwoDigitOnceMonthHistory()
     {
         $userId = auth()->id(); // Get logged in user's ID
         $twod_once_month_history = User::getUserOneMonthTwoDigits($userId);
+
         return $this->success([
-            $twod_once_month_history
+            $twod_once_month_history,
         ]);
     }
 }

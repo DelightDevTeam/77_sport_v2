@@ -2,34 +2,34 @@
 
 namespace App\Http\Controllers\Admin\ThreeD;
 
+use App\Http\Controllers\Controller;
+use App\Models\ThreeDigit\LotteryThreeDigitPivot;
+use App\Models\ThreeDigit\Permutation;
+use App\Models\ThreeDigit\Prize;
+use App\Models\ThreeDigit\ResultDate;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\ThreeDigit\Prize;
-use App\Http\Controllers\Controller;
-use App\Models\ThreeDigit\ResultDate;
-use App\Models\ThreeDigit\Permutation;
-use App\Models\ThreeDigit\LotteryThreeDigitPivot;
 
 class ResultDateController extends Controller
 {
     public function index()
-{
-    // Get the start and end dates for the current month
-    $currentMonthStart = Carbon::now()->startOfMonth();
-    $currentMonthEnd = Carbon::now()->endOfMonth();
+    {
+        // Get the start and end dates for the current month
+        $currentMonthStart = Carbon::now()->startOfMonth();
+        $currentMonthEnd = Carbon::now()->endOfMonth();
 
-    // Get the start and end dates for the next month
-    $nextMonthStart = Carbon::now()->addMonth()->startOfMonth();
-    $nextMonthEnd = Carbon::now()->addMonth()->endOfMonth();
+        // Get the start and end dates for the next month
+        $nextMonthStart = Carbon::now()->addMonth()->startOfMonth();
+        $nextMonthEnd = Carbon::now()->addMonth()->endOfMonth();
 
-    // Fetch results with status 'open' or 'closed' within these date ranges
-    $results = ResultDate::whereIn('status', ['open', 'closed'])
-        ->where(function ($query) use ($currentMonthStart, $currentMonthEnd, $nextMonthStart, $nextMonthEnd) {
-            $query->whereBetween('result_date', [$currentMonthStart, $currentMonthEnd])
-                  ->orWhereBetween('result_date', [$nextMonthStart, $nextMonthEnd]);
-        })
-        ->get();
-     $lasted_prizes = ResultDate::where('status', 'open')
+        // Fetch results with status 'open' or 'closed' within these date ranges
+        $results = ResultDate::whereIn('status', ['open', 'closed'])
+            ->where(function ($query) use ($currentMonthStart, $currentMonthEnd, $nextMonthStart, $nextMonthEnd) {
+                $query->whereBetween('result_date', [$currentMonthStart, $currentMonthEnd])
+                    ->orWhereBetween('result_date', [$nextMonthStart, $nextMonthEnd]);
+            })
+            ->get();
+        $lasted_prizes = ResultDate::where('status', 'open')
             ->where(function ($query) use ($currentMonthStart, $currentMonthEnd, $nextMonthStart, $nextMonthEnd) {
                 $query->whereBetween('result_date', [$currentMonthStart, $currentMonthEnd])
                     ->orWhereBetween('result_date', [$nextMonthStart, $nextMonthEnd]);
@@ -39,65 +39,66 @@ class ResultDateController extends Controller
         $permutation_digits = Permutation::all();
 
         $three_digits_prize = Prize::orderBy('id', 'desc')->first();
-    return view('admin.three_d.result_date.index', compact('results', 'lasted_prizes', 'permutation_digits', 'three_digits_prize'));
-}
+
+        return view('admin.three_d.result_date.index', compact('results', 'lasted_prizes', 'permutation_digits', 'three_digits_prize'));
+    }
 
     public function updateStatus(Request $request, $id)
-{
-    // Get the new status with a fallback default
-    $newStatus = $request->input('status', 'closed'); // Default to 'closed' if not provided
-    
-    // Find the existing record and update the status
-    $result = ResultDate::findOrFail($id);
+    {
+        // Get the new status with a fallback default
+        $newStatus = $request->input('status', 'closed'); // Default to 'closed' if not provided
 
-    // Ensure the status is not NULL before updating
-    if (is_null($newStatus)) {
-        return redirect()->back()->with('error', 'Status cannot be null');
+        // Find the existing record and update the status
+        $result = ResultDate::findOrFail($id);
+
+        // Ensure the status is not NULL before updating
+        if (is_null($newStatus)) {
+            return redirect()->back()->with('error', 'Status cannot be null');
+        }
+
+        $result->status = $newStatus;
+        $result->save();
+
+        return redirect()->back()->with('success', "Status changed to '{$newStatus}' successfully.");
     }
-
-    $result->status = $newStatus;
-    $result->save();
-
-    return redirect()->back()->with('success', "Status changed to '{$newStatus}' successfully.");
-}
 
     public function AdminLogThreeDOpenClose(Request $request, $id)
-{
-    // Get the new status with a fallback default
-    $newStatus = $request->input('admin_log', 'closed'); // Default to 'closed' if not provided
-    
-    // Find the existing record and update the status
-    $result = LotteryThreeDigitPivot::findOrFail($id);
+    {
+        // Get the new status with a fallback default
+        $newStatus = $request->input('admin_log', 'closed'); // Default to 'closed' if not provided
 
-    // Ensure the status is not NULL before updating
-    if (is_null($newStatus)) {
-        return redirect()->back()->with('error', 'Admin Log cannot be null');
+        // Find the existing record and update the status
+        $result = LotteryThreeDigitPivot::findOrFail($id);
+
+        // Ensure the status is not NULL before updating
+        if (is_null($newStatus)) {
+            return redirect()->back()->with('error', 'Admin Log cannot be null');
+        }
+
+        $result->admin_log = $newStatus;
+        $result->save();
+
+        return redirect()->back()->with('success', "Admin Log changed to '{$newStatus}' successfully.");
     }
-
-    $result->admin_log = $newStatus;
-    $result->save();
-
-    return redirect()->back()->with('success', "Admin Log changed to '{$newStatus}' successfully.");
-}
 
     public function UserLogThreeDOpenClose(Request $request, $id)
-{
-    // Get the new status with a fallback default
-    $newStatus = $request->input('user_log', 'closed'); // Default to 'closed' if not provided
-    
-    // Find the existing record and update the status
-    $result = ResultDate::findOrFail($id);
+    {
+        // Get the new status with a fallback default
+        $newStatus = $request->input('user_log', 'closed'); // Default to 'closed' if not provided
 
-    // Ensure the status is not NULL before updating
-    if (is_null($newStatus)) {
-        return redirect()->back()->with('error', 'User Log cannot be null');
+        // Find the existing record and update the status
+        $result = ResultDate::findOrFail($id);
+
+        // Ensure the status is not NULL before updating
+        if (is_null($newStatus)) {
+            return redirect()->back()->with('error', 'User Log cannot be null');
+        }
+
+        $result->user_log = $newStatus;
+        $result->save();
+
+        return redirect()->back()->with('success', "User Log changed to '{$newStatus}' successfully.");
     }
-
-    $result->user_log = $newStatus;
-    $result->save();
-
-    return redirect()->back()->with('success', "User Log changed to '{$newStatus}' successfully.");
-}
 
     // public function updateStatus(Request $request, $id)
     // {

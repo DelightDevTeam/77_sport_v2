@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('lotto_three_digit_pivot', function (Blueprint $table) {
-           $table->id();
+            $table->id();
             $table->unsignedBigInteger('result_date_id')->nullable();
             $table->unsignedBigInteger('lotto_id');
             $table->unsignedBigInteger('user_id')->nullable();

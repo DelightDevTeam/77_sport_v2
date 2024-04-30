@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use App\Models\Lotto;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PermutationPrizeSentService
 {
@@ -64,6 +64,7 @@ class PermutationPrizeSentService
 
         if ($lottos->isEmpty()) {
             Log::info("No lottos found for user ID: $userId in the given date range.");
+
             return [
                 'results' => collect([]),
                 'totalSubAmount' => 0,
@@ -90,26 +91,26 @@ class PermutationPrizeSentService
             ->whereIn('lotto_three_digit_pivot.lotto_id', $lottos->pluck('id')) // Use lottery IDs
             ->get();
 
-        Log::info("Retrieved results for user ID: $userId, results count: " . $results->count());
+        Log::info("Retrieved results for user ID: $userId, results count: ".$results->count());
 
         // Calculate the total sub_amount for this user within the relevant date range
         $totalSubAmount = DB::table('lotto_three_digit_pivot')
             ->whereIn('lotto_three_digit_pivot.lotto_id', $lottos->pluck('id')) // Use lottery IDs
             ->whereBetween('lotto_three_digit_pivot.created_at', [$startDate, $endDate])
             ->sum('sub_amount');
-            $totalPrizeAmount = 0;
-             foreach ($results as $result) {
-                $prizeAmount = $result->sub_amount * 10; // Prize multiplier
-                $result->prize_amount = $prizeAmount; // Add prize_amount to each result
-                $totalPrizeAmount += $prizeAmount; // Accumulate total prize amount
-            }
+        $totalPrizeAmount = 0;
+        foreach ($results as $result) {
+            $prizeAmount = $result->sub_amount * 10; // Prize multiplier
+            $result->prize_amount = $prizeAmount; // Add prize_amount to each result
+            $totalPrizeAmount += $prizeAmount; // Accumulate total prize amount
+        }
 
         Log::info("Total sub_amount for user ID: $userId is $totalSubAmount");
 
         return [
             'results' => $results,
             'totalSubAmount' => $totalSubAmount,
-            'totalPrizeAmount' => $totalPrizeAmount
+            'totalPrizeAmount' => $totalPrizeAmount,
         ];
     }
 }

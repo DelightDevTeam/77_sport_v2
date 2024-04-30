@@ -2,16 +2,16 @@
 
 namespace App\Jobs;
 
-use Carbon\Carbon;
-use App\Models\ThreeDigit\Lotto;
-use Illuminate\Bus\Queueable;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Models\ThreeDigit\LotteryThreeDigitPivot;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Models\ThreeDigit\Lotto;
+use Carbon\Carbon;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CheckForThreeDWinnersWithPermutations implements ShouldQueue
 {
@@ -31,8 +31,9 @@ class CheckForThreeDWinnersWithPermutations implements ShouldQueue
         $today = Carbon::today();
         $result_number = $this->threedWinner->result_number;
 
-        if (!$result_number) {
+        if (! $result_number) {
             Log::info('No result number provided. Exiting job.');
+
             return;
         }
 
@@ -70,7 +71,7 @@ class CheckForThreeDWinnersWithPermutations implements ShouldQueue
 
                     Log::info("Prize awarded and prize_sent set to true for entry ID {$entry->id}.");
                 } catch (\Exception $e) {
-                    Log::error("Error during transaction for entry ID {$entry->id}: " . $e->getMessage());
+                    Log::error("Error during transaction for entry ID {$entry->id}: ".$e->getMessage());
                     throw $e; // Trigger rollback if needed
                 }
             });
@@ -97,10 +98,10 @@ class CheckForThreeDWinnersWithPermutations implements ShouldQueue
         $result = [];
         for ($i = 0; $i < strlen($str); $i++) {
             $char = $str[$i];
-            $remainingChars = substr($str, 0, $i) . substr($str, $i + 1);
+            $remainingChars = substr($str, 0, $i).substr($str, $i + 1);
 
             foreach ($this->permutation($remainingChars) as $subPerm) {
-                $result[] = $char . $subPerm;
+                $result[] = $char.$subPerm;
             }
         }
 

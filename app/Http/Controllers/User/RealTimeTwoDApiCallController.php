@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Request;
 
 class RealTimeTwoDApiCallController extends Controller
 {
@@ -14,14 +13,15 @@ class RealTimeTwoDApiCallController extends Controller
      */
     public function index()
     {
-    $client = new Client();
-    $response = $client->request('GET', 'https://api.thaistock2d.com/live');
-    
-    $data = json_decode($response->getBody(), true);
-     if (request()->ajax()) {
-        return response()->json($data);
-    }
-    return view('lottery', ['data' => $data]);
+        $client = new Client();
+        $response = $client->request('GET', 'https://api.thaistock2d.com/live');
+
+        $data = json_decode($response->getBody(), true);
+        if (request()->ajax()) {
+            return response()->json($data);
+        }
+
+        return view('lottery', ['data' => $data]);
     }
 
     /**

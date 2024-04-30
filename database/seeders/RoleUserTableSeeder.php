@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class RoleUserTableSeeder extends Seeder
 {
@@ -17,6 +16,6 @@ class RoleUserTableSeeder extends Seeder
         User::findOrFail(2)->roles()->sync(1);
         User::findOrFail(3)->roles()->sync(2);
         User::findOrFail(4)->roles()->sync(3);
-        
+
     }
 }

@@ -2,60 +2,60 @@
 
 namespace App\Http\Controllers\Api\V1\ThreeD;
 
-use Carbon\Carbon;
-use App\Models\User;
-use Illuminate\Http\Request;
-use App\Traits\HttpResponses;
-use App\Services\LottoService;
-use Illuminate\Http\JsonResponse;
-use App\Models\Admin\LotteryMatch;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\ThreeDigit\ResultDate;
-use App\Models\ThreeDigit\ThreeDigit;
-use App\Models\ThreeDigit\ThreedClose;
-use App\Models\ThreeDigit\ThreeDLimit;
 use App\Http\Requests\ThreedPlayRequest;
+use App\Models\Admin\LotteryMatch;
+use App\Models\ThreeDigit\ResultDate;
+use App\Models\ThreeDigit\ThreedClose;
+use App\Models\ThreeDigit\ThreeDigit;
+use App\Models\ThreeDigit\ThreeDLimit;
+use App\Models\User;
+use App\Services\LottoService;
+use App\Traits\HttpResponses;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class ThreeDPlayController extends Controller
 {
     use HttpResponses;
+
     protected $lottoService;
 
     public function __construct(LottoService $lottoService)
     {
         $this->lottoService = $lottoService;
     }
+
     public function index()
     {
         $digits = ThreeDigit::all();
         $break = ThreeDLimit::latest()->first()->three_d_limit;
-        foreach($digits as $digit){
+        foreach ($digits as $digit) {
             $totalAmount = DB::table('lotto_three_digit_copy')->where('three_digit_id', $digit->id)->sum('sub_amount');
             $break = ThreeDLimit::latest()->first()->three_d_limit;
-            $remaining = $break-$totalAmount;
+            $remaining = $break - $totalAmount;
             $digit->remaining = $remaining;
         }
         $lottery_matches = LotteryMatch::where('id', 2)->whereNotNull('is_active')->first(['id', 'match_name', 'is_active']);
+
         return $this->success([
             'digits' => $digits,
             'break' => $break,
-            'lottery_matches' => $lottery_matches
+            'lottery_matches' => $lottery_matches,
         ]);
     }
 
-     public function play(ThreedPlayRequest $request): JsonResponse
+    public function play(ThreedPlayRequest $request): JsonResponse
     {
-    $currentDate = ResultDate::where('status', 'open')->first();
+        $currentDate = ResultDate::where('status', 'open')->first();
 
-    
-    // If no result date is found or it's closed, return an error
-    if (!$currentDate || $currentDate->status === 'closed') {
-        return response()->json([
-            'success' => false,
-            'message' => 'This 3D lottery match is closed for at this time. Welcome back Next Time!',
-        ], 401);
-    }
+        // If no result date is found or it's closed, return an error
+        if (! $currentDate || $currentDate->status === 'closed') {
+            return response()->json([
+                'success' => false,
+                'message' => 'This 3D lottery match is closed for at this time. Welcome back Next Time!',
+            ], 401);
+        }
         //Log::info($request->all());
         $totalAmount = $request->input('totalAmount');
         $amounts = $request->input('amounts');
@@ -82,21 +82,20 @@ class ThreeDPlayController extends Controller
             }
         }
 
-
         $result = $this->lottoService->play($totalAmount, $amounts);
         // return response()->json($result);
-        if ($result == "Insufficient funds.") {
-            $message = "လက်ကျန်ငွေ မလုံလောက်ပါ။";
+        if ($result == 'Insufficient funds.') {
+            $message = 'လက်ကျန်ငွေ မလုံလောက်ပါ။';
         } elseif (is_array($result)) {
             // return response()->json($result);
             $digit = [];
-            foreach($result as $k => $r){
-                $digit[] = ThreeDigit::find($result[$k]+1)->three_digit;
+            foreach ($result as $k => $r) {
+                $digit[] = ThreeDigit::find($result[$k] + 1)->three_digit;
             }
             // return response()->json($digit);
-            $d = implode(",",$digit);
+            $d = implode(',', $digit);
             // return response()->json($d);
-            $message = $d." ဂဏန်းမှာ သတ်မှတ် Limit ထက်ကျော်လွန်နေပါသည်။";
+            $message = $d.' ဂဏန်းမှာ သတ်မှတ် Limit ထက်ကျော်လွန်နေပါသည်။';
         } else {
             return $this->success($result);
         }
@@ -105,29 +104,31 @@ class ThreeDPlayController extends Controller
     }
 
     // three once week history
-     public function OnceWeekThreedigitHistoryConclude()
+    public function OnceWeekThreedigitHistoryConclude()
     {
         $userId = auth()->id(); // Get logged in user's ID
         $displayThreeDDigit = User::getAdminthreeDigitsHistoryApi($userId);
-       // $three_limits = ThreeDDLimit::orderBy('id', 'desc')->first();
-       return $this->success($displayThreeDDigit);
+
+        // $three_limits = ThreeDDLimit::orderBy('id', 'desc')->first();
+        return $this->success($displayThreeDDigit);
     }
 
-     // three once week history
-     public function OnceMonthThreedigitHistoryConclude()
+    // three once week history
+    public function OnceMonthThreedigitHistoryConclude()
     {
         $userId = auth()->id(); // Get logged in user's ID
         $displayThreeDDigit = User::getAdminthreeDigitsOneMonthHistoryApi($userId);
-       // $three_limits = ThreeDDLimit::orderBy('id', 'desc')->first();
-       return $this->success($displayThreeDDigit);
-    }
 
+        // $three_limits = ThreeDDLimit::orderBy('id', 'desc')->first();
+        return $this->success($displayThreeDDigit);
+    }
 
     // three once month history
     public function OnceMonthThreeDHistory()
     {
         $userId = auth()->id(); // Get logged in user's ID
         $displayThreeDDigit = User::getUserOneMonthThreeDigits($userId);
+
         return $this->success($displayThreeDDigit);
     }
 }

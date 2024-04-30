@@ -2,27 +2,47 @@
 
 namespace App\Http\Controllers\Admin\TwoD;
 
+use App\Http\Controllers\Controller;
+use App\Models\Two\TwodGameResult;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\Two\TwodGameResult;
-use App\Http\Controllers\Controller;
 
 class TwoGameResultController extends Controller
 {
+    protected function getCurrentSession()
+    {
+        $currentTime = Carbon::now()->format('H:i:s');
+
+        if ($currentTime >= '04:00:00' && $currentTime <= '12:01:00') {
+            return 'morning';
+        } elseif ($currentTime >= '12:01:01' && $currentTime <= '16:30:00') {
+            return 'evening';
+        } else {
+            return 'closed'; // If outside known session times
+        }
+    }
+
+    /**
+     * Display the current session's data for the day.
+     */
     public function index()
     {
         // Get today's date
         $today = Carbon::now()->format('Y-m-d');
 
-        // Retrieve results for today
-        //$results = TwodGameResult::where('result_date', $today)->get();
-        // Retrieve results for today where status is 'open'
-        $results = TwodGameResult::where('result_date', $today) // Match today's date
-                             ->where('status', 'open')      // Check if the status is 'open'
-                             ->get();
+        // Determine the current session
+        $currentSession = $this->getCurrentSession();
 
-        // Return the view with the results
-        return view('admin.two_d.twod_results.index', ['results' => $results]);
+        if ($currentSession === 'closed') {
+            return view('admin.two_d.twod_results.index', ['results' => 'Session is closed']);
+        }
+
+        // Retrieve the data for the current day and session
+        $result = TwodGameResult::where('result_date', $today)
+            ->where('session', $currentSession) // Ensure correct session
+            ->first();
+
+        return view('admin.two_d.twod_results.index', ['result' => $result]);
     }
 
     public function updateStatus(Request $request, $id)

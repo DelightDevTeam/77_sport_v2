@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Admin\TwoD;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\EveningLotteryAdminLogService;
 
 class EveningLotteryAdminLogController extends Controller
 {
-     protected $lotteryService;
+    protected $lotteryService;
 
     public function __construct(EveningLotteryAdminLogService $lotteryService)
     {

@@ -3,11 +3,8 @@
 namespace App\Models\Admin;
 
 use Carbon\Carbon;
-use App\Models\User;
-use App\Models\Admin\Lottery;
-use App\Models\Jackpot\Jackpot;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class TwoDigit extends Model
 {
@@ -33,16 +30,8 @@ class TwoDigit extends Model
         return Carbon::parse($value)->timezone('Asia/Yangon');
     }
 
-    public function lotteries() {
+    public function lotteries()
+    {
         return $this->belongsToMany(Lottery::class, 'lottery_two_digit_pivot')->withPivot('sub_amount');
     }
-
-     
-
-   
-
-    
-
-
-
 }

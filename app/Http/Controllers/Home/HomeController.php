@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin\Banner;
 use App\Models\Admin\BannerText;
 use App\Models\Admin\Game;
-use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {

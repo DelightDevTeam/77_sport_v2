@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\ThreeDigit\ResultDate;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use App\Models\ThreeDigit\ResultDate;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class ThreeDResultDateSeeder extends Seeder
 {
@@ -50,11 +49,11 @@ class ThreeDResultDateSeeder extends Seeder
                     $resultDate30 = Carbon::createFromDate($year, 12, 17);
 
                     ResultDate::create([
-                    'result_date' => $resultDate31->format('Y-m-d'),
-                    'match_start_date' => $resultDate30->format('Y-m-d'),   
-                    'result_time' => '15:30:00',
-                    'status' => 'closed',
-                    'endpoint' => 'https://77sportsmm.com/login',
+                        'result_date' => $resultDate31->format('Y-m-d'),
+                        'match_start_date' => $resultDate30->format('Y-m-d'),
+                        'result_time' => '15:30:00',
+                        'status' => 'closed',
+                        'endpoint' => 'https://77sportsmm.com/login',
                     ]);
                 }
             }

@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers\User;
 
-use GuzzleHttp\Client;
-use App\Models\Admin\Game;
+use App\Http\Controllers\Controller;
 use App\Models\Admin\Banner;
-use Illuminate\Http\Request;
+use App\Models\Admin\BannerText;
+use App\Models\Admin\Game;
 use App\Models\Admin\Lottery;
 use App\Models\Admin\TwoDigit;
-use App\Models\Admin\BannerText;
-use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class WelcomeController extends Controller
 {
@@ -54,7 +53,6 @@ class WelcomeController extends Controller
 
     //     return view('welcome', compact('twoDigits', 'data', 'latestResultToday'));
     // }
-
 
     public function index()
     {
@@ -97,6 +95,7 @@ class WelcomeController extends Controller
     {
         return view('frontend.withdraw-bank');
     }
+
     public function withDraw()
     {
         return view('frontend.withdraw');
@@ -116,7 +115,6 @@ class WelcomeController extends Controller
     {
         return view('frontend.service');
     }
-
 
     public function twoD()
     {
@@ -215,6 +213,7 @@ class WelcomeController extends Controller
         //return view('two_d.api_test');
         return view('frontend.twod-holiday');
     }
+
     public function twodDigitRecord()
     {
         return view('frontend.twod-winDigitRecord');
@@ -240,7 +239,6 @@ class WelcomeController extends Controller
     {
         return view('frontend.register');
     }
-
 
     /**
      * Show the form for creating a new resource.
@@ -318,7 +316,6 @@ class WelcomeController extends Controller
     //     //     ]);
     //     // }
     // }
-
 
     /**
      * Display the specified resource.

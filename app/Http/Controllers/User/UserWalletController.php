@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\Controller;
+use App\Models\Admin\FillBalance;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Models\Admin\FillBalance;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class UserWalletController extends Controller
@@ -20,44 +20,45 @@ class UserWalletController extends Controller
     {
         return view('two_d.topUp');
     }
+
     // topup submit blade
     public function topUpSubmit()
     {
         $user = User::where('id', 1)->whereNotNull('kpay_no')->first();
-        
+
         return view('two_d.topUpSubmit', compact('user'));
     }
 
     public function CBPaytopUpSubmit()
     {
         $user = User::where('id', 1)->whereNotNull('cbpay_no')->first();
-        
+
         return view('two_d.cb_pay_topUpSubmit', compact('user'));
     }
 
     public function WavePaytopUpSubmit()
     {
         $user = User::where('id', 1)->whereNotNull('wavepay_no')->first();
-        
+
         return view('two_d.wave_pay_topUpSubmit', compact('user'));
     }
 
     public function AYAPaytopUpSubmit()
     {
         $user = User::where('id', 1)->whereNotNull('ayapay_no')->first();
-        
+
         return view('two_d.aya_pay_topUpSubmit', compact('user'));
     }
 
     public function StoreKpayFillMoney(Request $request)
     {
-       // dd($request->all());
+        // dd($request->all());
         // Validate the request
         $request->validate([
             'kpay_no' => 'required|numeric',
             'user_ph_no' => 'required|numeric',
             'last_six_digit' => 'required|string|max:6|min:6',
-            'amount' => 'required|numeric'
+            'amount' => 'required|numeric',
         ]);
 
         // Create a new FillBalance record
@@ -82,8 +83,8 @@ class UserWalletController extends Controller
         $request->validate([
             'cbpay_no' => 'required|numeric',
             'user_ph_no' => 'required|numeric',
-            'last_six_digit' => 'required|string|max:6|min:6', 
-            'amount' => 'required|numeric'
+            'last_six_digit' => 'required|string|max:6|min:6',
+            'amount' => 'required|numeric',
         ]);
 
         // Create a new FillBalance record
@@ -109,7 +110,7 @@ class UserWalletController extends Controller
             'wavepay_no' => 'required|numeric',
             'user_ph_no' => 'required|numeric',
             'last_six_digit' => 'required|string|max:6|min:6',
-            'amount' => 'required|numeric'
+            'amount' => 'required|numeric',
         ]);
 
         // Create a new FillBalance record
@@ -135,7 +136,7 @@ class UserWalletController extends Controller
             'ayapay_no' => 'required|numeric',
             'user_ph_no' => 'required|numeric',
             'last_six_digit' => 'required|string|max:6|min:6',
-            'amount' => 'required|numeric'
+            'amount' => 'required|numeric',
         ]);
 
         // Create a new FillBalance record
@@ -153,5 +154,4 @@ class UserWalletController extends Controller
         // Redirect back with a success message
         return redirect()->back()->with('success', 'Money fill request submitted successfully!');
     }
-
 }

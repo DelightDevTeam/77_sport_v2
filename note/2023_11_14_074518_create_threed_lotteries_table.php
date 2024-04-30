@@ -26,16 +26,15 @@ return new class extends Migration
      * Reverse the migrations.
      */
     public function down()
-{
-    Schema::table('threed_lotteries', function (Blueprint $table) {
-        // Drop foreign key constraints
-        $table->dropForeign('threed_lotteries_user_id_foreign');
-        $table->dropForeign('threed_lotteries_lottery_match_id_foreign');
-    });
+    {
+        Schema::table('threed_lotteries', function (Blueprint $table) {
+            // Drop foreign key constraints
+            $table->dropForeign('threed_lotteries_user_id_foreign');
+            $table->dropForeign('threed_lotteries_lottery_match_id_foreign');
+        });
 
-    Schema::dropIfExists('threed_lotteries');
-}
-
+        Schema::dropIfExists('threed_lotteries');
+    }
 
     // public function down(): void
     // {

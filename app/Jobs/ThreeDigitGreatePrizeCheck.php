@@ -2,16 +2,16 @@
 
 namespace App\Jobs;
 
-use Carbon\Carbon;
 use App\Models\Lotto;
+use App\Models\ThreeDigit\LotteryThreeDigitPivot;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use App\Models\ThreeDigit\LotteryThreeDigitPivot;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ThreeDigitGreatePrizeCheck implements ShouldQueue
 {
@@ -26,7 +26,7 @@ class ThreeDigitGreatePrizeCheck implements ShouldQueue
 
     public function handle(): void
     {
-        if (!$this->isPlayingDay()) {
+        if (! $this->isPlayingDay()) {
             return;
         }
 
@@ -40,6 +40,7 @@ class ThreeDigitGreatePrizeCheck implements ShouldQueue
     protected function isPlayingDay(): bool
     {
         $playDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
         return in_array(Carbon::now()->englishDayOfWeek, $playDays);
     }
 
@@ -67,7 +68,7 @@ class ThreeDigitGreatePrizeCheck implements ShouldQueue
 
                     Log::info("Prize awarded and prize_sent set to true for entry ID {$entry->id}.");
                 } catch (\Exception $e) {
-                    Log::error("Error during transaction for entry ID {$entry->id}: " . $e->getMessage());
+                    Log::error("Error during transaction for entry ID {$entry->id}: ".$e->getMessage());
                     throw $e; // Trigger rollback if needed
                 }
             });

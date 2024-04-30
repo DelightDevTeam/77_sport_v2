@@ -2,17 +2,16 @@
 
 namespace Database\Seeders;
 
+use App\Models\Two\TwodGameResult;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use App\Models\Two\TwodGameResult;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class TwoDGameResultTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
-     public function run(): void
+    public function run(): void
     {
         // Set the starting date to today's date
         $currentDate = Carbon::now();
@@ -20,7 +19,6 @@ class TwoDGameResultTableSeeder extends Seeder
         // Find the closest Monday (today if it's Monday, or the next Monday)
         $startDate = $currentDate->copy()->next(Carbon::MONDAY);
         //$startDate = $currentDate->copy()->next(Carbon::SATURDAY);
-
 
         // Iterate over the next 10 years
         for ($year = 0; $year < 10; $year++) {

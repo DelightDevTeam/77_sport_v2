@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Admin\TwoD;
 
-use Illuminate\Http\Request;
-use App\Models\TwoD\TwoDigit;
 use App\Http\Controllers\Controller;
 use App\Services\TwoDigitDataService;
 
@@ -17,21 +15,20 @@ class DataLejarController extends Controller
     }
 
     public function showData()
-{
-    $sessionsData = $this->lotteryService->getTwoDigitsData();
-    
-    return view('admin.two_d.lajar.morning_lejar', [
-        'data' => $sessionsData,
-    ]);
-}
-    
-        public function showDataEvening()
-        {
-            $sessionsData = $this->lotteryService->getTwoDigitsData();
-            
-            return view('admin.two_d.lajar.evening_lejar', [
-                'data' => $sessionsData,
-            ]);
-        }
+    {
+        $sessionsData = $this->lotteryService->getTwoDigitsData();
 
+        return view('admin.two_d.lajar.morning_lejar', [
+            'data' => $sessionsData,
+        ]);
+    }
+
+    public function showDataEvening()
+    {
+        $sessionsData = $this->lotteryService->getTwoDigitsData();
+
+        return view('admin.two_d.lajar.evening_lejar', [
+            'data' => $sessionsData,
+        ]);
+    }
 }

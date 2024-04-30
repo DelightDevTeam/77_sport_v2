@@ -42,49 +42,52 @@
    </div>
    <div class="table-responsive">
     <table class="table table-flush" id="permission-search">
-     <thead class="thead-light">
-      <tr>
-       <th>#</th>
-       <th>OpeningDate</th>
-       <th>OpeningTime</th>
-       <th>ResultNumber</th>
-       <th>PrizeNumber</th>
-       <th>Status</th>
-       <th>Session</th>
-       <th>Update</th>
-       
-      </tr>
-     </thead>
-     <tbody>
-      @foreach($results as $key => $result)
-      <tr>
-       <td class="text-sm font-weight-normal">{{ ++$key }}</td>
-       <td class="text-sm font-weight-normal">{{ $result->result_date }}</td>
-       <td class="text-sm font-weight-normal">{{ $result->result_time }}</td>
-       <td class="text-sm font-weight-normal">{{ $result->result_number ?? 'Pending' }}</td>
-       <td>
-            <form method="POST" action="{{ route('admin.update_result_number', ['id' => $result->id]) }}">
-                @csrf
-                @method('PATCH')
-                <input type="text" name="result_number" placeholder="Enter result number" required class="form-control">
-                <button type="submit" class="btn btn-primary">CreatePrizeNumber</button>
-            </form>
-        </td>
-       <td id="status-{{ $result->id }}">{{ ucfirst($result->status) }}</td>
-        <td>{{ ucfirst($result->session) }}</td>
-        <td>
-            <!-- Toggle button to update status -->
-            <button class="toggle-status"
-                    data-id="{{ $result->id }}"
-                    data-status="{{ $result->status == 'open' ? 'closed' : 'open' }}">
-                Open/Close
-            </button>
-        </td>
-       
-      </tr>
-      @endforeach
-     </tbody>
-    </table>
+    <thead class="thead-light">
+        <tr>
+            <th>#</th>
+            <th>Opening Date</th>
+            <th>Opening Time</th>
+            <th>Result Number</th>
+            <th>Prize Number</th>
+            <th>Status</th>
+            <th>Session</th>
+            <th>Update</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if ($result)
+        <tr>
+            <td class="text-sm font-weight-normal">1</td>
+            <td class="text-sm font-weight-normal">{{ $result->result_date }}</td>
+            <td class="text-sm font-weight-normal">{{ $result->result_time }}</td>
+            <td class="text-sm font-weight-normal">{{ $result->result_number ?? 'Pending' }}</td>
+            <td>
+                <form method="POST" action="{{ route('admin.update_result_number', ['id' => $result->id]) }}">
+                    @csrf
+                    @method('PATCH')
+                    <input type="text" name="result_number" placeholder="Enter result number" required class="form-control">
+                    <button type="submit" class="btn btn-primary">Create Prize Number</button>
+                </form>
+            </td>
+            <td class="text-sm font-weight-normal">{{ ucfirst($result->status) }}</td>
+            <td class="text-sm font-weight-normal">{{ ucfirst($result->session) }}</td>
+            <td>
+                <!-- Toggle button to update status -->
+                <button class="toggle-status"
+                        data-id="{{ $result->id }}"
+                        data-status="{{ $result->status === 'open' ? 'closed' : 'open' }}">
+                    Open/Close
+                </button>
+            </td>
+        </tr>
+        @else
+        <tr>
+            <td colspan="8" class="text-center">No results found for today and current session.</td>
+        </tr>
+        @endif
+    </tbody>
+</table>
+
    </div>
   </div>
  </div>

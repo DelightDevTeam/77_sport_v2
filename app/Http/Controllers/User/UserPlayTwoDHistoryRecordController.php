@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Models\User;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 
 class UserPlayTwoDHistoryRecordController extends Controller
 {
@@ -12,6 +11,7 @@ class UserPlayTwoDHistoryRecordController extends Controller
     {
         $userId = auth()->id(); // Get logged in user's ID
         $playedMorningTwoDigits = User::getUserMorningTwoDigits($userId);
+
         //$playedEveningTwoDigits = User::getUserEveningTwoDigits($userId);
         return view('frontend.two_d.twod_history', [
             'morningDigits' => $playedMorningTwoDigits,
@@ -24,6 +24,7 @@ class UserPlayTwoDHistoryRecordController extends Controller
         $userId = auth()->id(); // Get logged in user's ID
         //$playedMorningTwoDigits = User::getUserMorningTwoDigits($userId);
         $playedEveningTwoDigits = User::getUserEveningTwoDigits($userId);
+
         return view('two_d.evening-history-record', [
             // 'morningDigits' => $playedMorningTwoDigits,
             'eveningDigits' => $playedEveningTwoDigits,
@@ -37,6 +38,7 @@ class UserPlayTwoDHistoryRecordController extends Controller
         $playedMorningTwoDigits = User::getUserMorningTwoDigits($userId);
         $playedEarlyEveningTwoDigits = User::getUserEarlyEveningTwoDigits($userId);
         $playedEveningTwoDigits = User::getUserEveningTwoDigits($userId);
+
         return view('frontend.two_d.twod_history', [
             'earlymorningDigits' => $playedearlyMorningTwoDigits,
             'morningDigits' => $playedMorningTwoDigits,

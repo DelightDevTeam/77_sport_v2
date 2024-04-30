@@ -2,25 +2,22 @@
 
 namespace App\Services;
 
-use Carbon\Carbon;
-use App\Models\Lottery;
-use App\Models\TwoD\TwoDigit;
-use App\Models\TwoD\HeadDigit;
 use App\Models\Admin\TwoDLimit;
+use App\Models\Lottery;
+use App\Models\LotteryTwoDigitPivot;
 use App\Models\Two\TwodGameResult;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Models\LotteryTwoDigitPivot;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class TwoDService
 {
-    
-     public function play($totalAmount, array $amounts)
+    public function play($totalAmount, array $amounts)
     {
         // Check for authentication
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return response()->json(['message' => 'User not authenticated'], 401);
         }
 
@@ -38,7 +35,7 @@ class TwoDService
             }
 
             if ($user->balance < $totalAmount) {
-                return "Insufficient funds.";
+                return 'Insufficient funds.';
             }
 
             $preOver = [];
@@ -48,7 +45,7 @@ class TwoDService
                     $preOver[] = $preCheck[0];
                 }
             }
-            if (!empty($preOver)) {
+            if (! empty($preOver)) {
                 return $preOver;
             }
 
@@ -66,7 +63,7 @@ class TwoDService
                     $over[] = $check[0];
                 }
             }
-            if (!empty($over)) {
+            if (! empty($over)) {
                 return $over;
             }
 
@@ -75,67 +72,96 @@ class TwoDService
 
             DB::commit();
 
-            return "Bet placed successfully.";
+            return 'Bet placed successfully.';
 
         } catch (ModelNotFoundException $e) {
             DB::rollback();
-            Log::error('Model not found in TwoDService play method: ' . $e->getMessage());
-            return "Resource not found.";
+            Log::error('Model not found in TwoDService play method: '.$e->getMessage());
+
+            return 'Resource not found.';
         } catch (\Exception $e) {
             DB::rollback();
-            Log::error('Error in TwoDService play method: ' . $e->getMessage());
+            Log::error('Error in TwoDService play method: '.$e->getMessage());
+
             return $e->getMessage(); // Handle general exceptions
         }
     }
 
-    
-    protected function preProcessAmountCheck($amount)
-{
-    $twoDigit = str_pad($amount['num'], 2, '0', STR_PAD_LEFT); // Ensure two-digit format
-    $break = TwoDLimit::latest()->first()->two_d_limit;
-    //$break = Auth::user()->limit ?? 0; // Set default value if `cor` is not set
-    
-    Log::info("User's commission limit (limit): {$break}");
-    Log::info("Checking bet_digit: {$twoDigit}");
+    protected function getCurrentSession()
+    {
+        $currentTime = Carbon::now()->format('H:i:s');
 
-    $totalBetAmountForTwoDigit = DB::table('lottery_two_digit_pivot')
-                        ->where('bet_digit', $twoDigit)
-                        ->sum('sub_amount');
-
-    Log::info("Total bet amount for {$twoDigit}: {$totalBetAmountForTwoDigit}");
-
-    $subAmount = $amount['amount'];
-
-    if ($totalBetAmountForTwoDigit + $subAmount > $break) {
-        Log::warning("Bet on {$twoDigit} exceeds limit.");
-        return [$amount['num']]; // Indicates over-limit
+        if ($currentTime >= '04:01:00' && $currentTime <= '12:01:00') {
+            return 'morning';
+        } elseif ($currentTime >= '12:01:00' && $currentTime <= '15:45:00') {
+            return 'evening';
+        } else {
+            return 'closed'; // If outside known session times
+        }
     }
 
-    return null; // Indicates no over-limit
-}
+    protected function getCurrentSessionTime()
+    {
+        $currentTime = Carbon::now()->format('H:i:s');
 
+        if ($currentTime >= '04:01:00' && $currentTime <= '12:01:00') {
+            return '12:01:00';
+        } elseif ($currentTime >= '12:01:00' && $currentTime <= '15:45:00') {
+            return '16:30:00';
+        } else {
+            return 'closed'; // If outside known session times
+        }
+    }
+
+    protected function preProcessAmountCheck($amount)
+    {
+        $twoDigit = str_pad($amount['num'], 2, '0', STR_PAD_LEFT); // Ensure two-digit format
+        $break = TwoDLimit::latest()->first()->two_d_limit;
+        //$break = Auth::user()->limit ?? 0; // Set default value if `cor` is not set
+
+        Log::info("User's commission limit (limit): {$break}");
+        Log::info("Checking bet_digit: {$twoDigit}");
+
+        $totalBetAmountForTwoDigit = DB::table('lottery_two_digit_pivot')
+            ->where('bet_digit', $twoDigit)
+            ->sum('sub_amount');
+
+        Log::info("Total bet amount for {$twoDigit}: {$totalBetAmountForTwoDigit}");
+
+        $subAmount = $amount['amount'];
+
+        if ($totalBetAmountForTwoDigit + $subAmount > $break) {
+            Log::warning("Bet on {$twoDigit} exceeds limit.");
+
+            return [$amount['num']]; // Indicates over-limit
+        }
+
+        return null; // Indicates no over-limit
+    }
 
     protected function processAmount($amount, $lotteryId)
     {
-        
-    $twoDigit = str_pad($amount['num'], 2, '0', STR_PAD_LEFT); // Ensure three-digit format
+
+        $twoDigit = str_pad($amount['num'], 2, '0', STR_PAD_LEFT); // Ensure three-digit format
 
         $break = TwoDLimit::latest()->first()->two_d_limit;
         //$break = Auth::user()->limit;
-        
+
         $totalBetAmountForTwoDigit = DB::table('lottery_two_digit_pivot')
-                        ->where('bet_digit', $twoDigit)
-                        ->sum('sub_amount');
+            ->where('bet_digit', $twoDigit)
+            ->sum('sub_amount');
         $subAmount = $amount['amount'];
         $betDigit = $amount['num'];
 
         if ($totalBetAmountForTwoDigit + $subAmount <= $break) {
             $userID = Auth::user();
             $today = Carbon::now()->format('Y-m-d');
-        // Retrieve results for today where status is 'open'
-        $results = TwodGameResult::where('result_date', $today) // Match today's date
-                             ->where('status', 'open')      // Check if the status is 'open'
-                             ->first();
+            $currentSession = $this->getCurrentSession();
+            $currentSessionTime = $this->getCurrentSessionTime();
+            // Retrieve results for today where status is 'open'
+            $results = TwodGameResult::where('result_date', $today) // Match today's date
+                ->where('status', 'open')      // Check if the status is 'open'
+                ->first();
 
             LotteryTwoDigitPivot::create([
                 'lottery_id' => $lotteryId,
@@ -146,10 +172,10 @@ class TwoDService
                 'prize_sent' => false,
                 'match_status' => $results->status,
                 'res_date' => $results->result_date,
-                'res_time' => $results->result_time,
-                'session' => $results->session,
+                'res_time' => $currentSessionTime,
+                'session' => $currentSession,
                 'admin_log' => $results->admin_log,
-                'user_log' => $results->user_log
+                'user_log' => $results->user_log,
 
             ]);
         } else {

@@ -4,7 +4,6 @@ namespace App\Http\Requests\AuthApi;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules;
-use Illuminate\Validation\Rules\Password;
 
 class RegisterRequest extends FormRequest
 {
@@ -30,6 +29,7 @@ class RegisterRequest extends FormRequest
             'password' => ['required', 'min:6'],
         ];
     }
+
     protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
     {
         $response = response()->json([

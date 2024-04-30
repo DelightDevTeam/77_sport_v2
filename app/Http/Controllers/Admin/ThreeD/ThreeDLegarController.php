@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin\ThreeD;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\ThreeDigitDataService;
 
@@ -16,18 +15,16 @@ class ThreeDLegarController extends Controller
     }
 
     public function showData()
-{
-    //$sessionsData = $this->lotteryService->getThreeDigitsData();
-    // In your controller
-$sessionsData = $this->lotteryService->getThreeDigitsData() ?? [];
+    {
+        //$sessionsData = $this->lotteryService->getThreeDigitsData();
+        // In your controller
+        $sessionsData = $this->lotteryService->getThreeDigitsData() ?? [];
 
-    // Temporarily add this to check the structure of $sessionsData
-    //dd($sessionsData);
+        // Temporarily add this to check the structure of $sessionsData
+        //dd($sessionsData);
 
-    return view('admin.three_d.legar.lejar', [
-        'data' => $sessionsData,
-    ]);
-}
-
-    
+        return view('admin.three_d.legar.lejar', [
+            'data' => $sessionsData,
+        ]);
+    }
 }

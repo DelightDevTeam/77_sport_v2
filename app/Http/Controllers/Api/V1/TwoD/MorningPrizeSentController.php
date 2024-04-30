@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\V1\TwoD;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\MorningPrizeSentService;
 use Illuminate\Http\JsonResponse;
@@ -10,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class MorningPrizeSentController extends Controller
 {
-    protected $prizeSentService; 
+    protected $prizeSentService;
 
     public function __construct(MorningPrizeSentService $prizeSentService)
     {
@@ -19,8 +18,6 @@ class MorningPrizeSentController extends Controller
 
     /**
      * Display the prize sent data for the authenticated user.
-     *
-     * @return JsonResponse
      */
     public function showPrizeSentData(): JsonResponse
     {
@@ -37,7 +34,7 @@ class MorningPrizeSentController extends Controller
             ]);
         } catch (\Exception $e) {
             // Log the error
-            Log::error('Error retrieving prize sent data: ' . $e->getMessage());
+            Log::error('Error retrieving prize sent data: '.$e->getMessage());
 
             // Return a JSON response with an error message
             return response()->json([

@@ -33,8 +33,8 @@ class DatabaseSeeder extends Seeder
             TwoDLimitTableSeeder::class,
             ThreeDLimitTableSeeder::class,
             CommissionTableSeeder::class,
-            TwoDGameResultTableSeeder::class, 
-            ThreeDResultDateSeeder::class
+            TwoDGameResultTableSeeder::class,
+            ThreeDResultDateSeeder::class,
         ]);
     }
 }

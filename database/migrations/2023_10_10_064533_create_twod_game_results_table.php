@@ -21,7 +21,7 @@ return new class extends Migration
             $table->enum('admin_log', ['open', 'closed'])->default('closed'); // New status column
             $table->enum('user_log', ['open', 'closed'])->default('closed'); // New status column
 
-            $table->timestamps(); 
+            $table->timestamps();
         });
     }
 

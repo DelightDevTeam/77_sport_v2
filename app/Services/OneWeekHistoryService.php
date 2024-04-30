@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use App\Models\Lotto;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OneWeekHistoryService
 {
@@ -64,6 +64,7 @@ class OneWeekHistoryService
 
         if ($lottos->isEmpty()) {
             Log::info("No lottos found for user ID: $userId in the given date range.");
+
             return [
                 'results' => collect([]),
                 'totalSubAmount' => 0,
@@ -90,7 +91,7 @@ class OneWeekHistoryService
             ->whereIn('lotto_three_digit_pivot.lotto_id', $lottos->pluck('id')) // Use lottery IDs
             ->get();
 
-        Log::info("Retrieved results for user ID: $userId, results count: " . $results->count());
+        Log::info("Retrieved results for user ID: $userId, results count: ".$results->count());
 
         // Calculate the total sub_amount for this user within the relevant date range
         $totalSubAmount = DB::table('lotto_three_digit_pivot')

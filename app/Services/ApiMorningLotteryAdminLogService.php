@@ -3,9 +3,9 @@
 namespace App\Services;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 
 class ApiMorningLotteryAdminLogService
 {
@@ -47,6 +47,7 @@ class ApiMorningLotteryAdminLogService
 
         if ($lotteryIds->isEmpty()) {
             Log::info("No lotteries found for user ID: $userId during the current session.");
+
             return [
                 'results' => collect([]), // Return an empty collection
                 'totalSubAmount' => 0,

@@ -4,7 +4,6 @@ namespace App\Services;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 
 class MorningLotteryAdminLogService
 {
@@ -13,7 +12,7 @@ class MorningLotteryAdminLogService
      *
      * @return string
      */
-     protected function getCurrentSession()
+    protected function getCurrentSession()
     {
         $currentTime = Carbon::now()->format('H:i:s');
 
@@ -52,7 +51,7 @@ class MorningLotteryAdminLogService
                 'lottery_two_digit_pivot.match_status',
                 'lottery_two_digit_pivot.sub_amount'
             )
-            ->where('lottery_two_digit_pivot.admin_log', 'open') // Admin log is open
+            //->where('lottery_two_digit_pivot.admin_log', 'open') // Admin log is open
             ->where('lottery_two_digit_pivot.res_date', $today) // Today's results
             ->where('lottery_two_digit_pivot.session', $currentSession) // Current session
             ->get();

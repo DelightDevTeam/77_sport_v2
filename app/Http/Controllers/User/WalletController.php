@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\Controller;
+use App\Models\Admin\FillBalance;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Models\Admin\FillBalance;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class WalletController extends Controller
@@ -14,13 +14,14 @@ class WalletController extends Controller
     {
         return view('frontend.wallet');
     }
+
     public function UserKpayFillMoney()
     {
         // user id 1 is admin rethrive from database where kpay_no is not null
         $user = User::where('id', 1)->whereNotNull('kpay_no')->first();
+
         return view('frontend.topUp', compact('user'));
-        
-        
+
     }
 
     // public function continueUserKpayFillMoney()
@@ -28,34 +29,34 @@ class WalletController extends Controller
     //     // user id 1 is admin rethrive from database where kpay_no is not null
     //     $user = User::where('id', 1)->whereNotNull('kpay_no')->first();
     //     return view('frontend.topUp', compact('user'));
-        
-        
+
     // }
 
     public function UserCBPayFillMoney()
     {
         // user id 1 is admin rethrive from database where kpay_no is not null
         $user = User::where('id', 1)->whereNotNull('cbpay_no')->first();
+
         return view('frontend.cb_pay_top_up', compact('user'));
-        
-        
+
     }
 
     public function UserWavePayFillMoney()
     {
         // user id 1 is admin rethrive from database where kpay_no is not null
         $user = User::where('id', 1)->whereNotNull('wavepay_no')->first();
+
         return view('frontend.wave_pay_top_up', compact('user'));
-        
-        
+
     }
+
     public function UserAYAPayFillMoney()
     {
         // user id 1 is admin rethrive from database where kpay_no is not null
         $user = User::where('id', 1)->whereNotNull('ayapay_no')->first();
+
         return view('frontend.aya_pay_top_up', compact('user'));
-        
-        
+
     }
 
     public function StoreKpayFillMoney(Request $request)
@@ -65,7 +66,7 @@ class WalletController extends Controller
             'kpay_no' => 'required|numeric',
             'user_ph_no' => 'required|numeric',
             'last_six_digit' => 'required|string|max:6|min:6',
-            'amount' => 'required|numeric'
+            'amount' => 'required|numeric',
         ]);
 
         // Create a new FillBalance record
@@ -90,8 +91,8 @@ class WalletController extends Controller
         $request->validate([
             'cbpay_no' => 'required|numeric',
             'user_ph_no' => 'required|numeric',
-            'last_six_digit' => 'required|string|max:6|min:6', 
-            'amount' => 'required|numeric'
+            'last_six_digit' => 'required|string|max:6|min:6',
+            'amount' => 'required|numeric',
         ]);
 
         // Create a new FillBalance record
@@ -117,7 +118,7 @@ class WalletController extends Controller
             'wavepay_no' => 'required|numeric',
             'user_ph_no' => 'required|numeric',
             'last_six_digit' => 'required|string|max:6|min:6',
-            'amount' => 'required|numeric'
+            'amount' => 'required|numeric',
         ]);
 
         // Create a new FillBalance record
@@ -143,7 +144,7 @@ class WalletController extends Controller
             'ayapay_no' => 'required|numeric',
             'user_ph_no' => 'required|numeric',
             'last_six_digit' => 'required|string|max:6|min:6',
-            'amount' => 'required|numeric'
+            'amount' => 'required|numeric',
         ]);
 
         // Create a new FillBalance record
@@ -161,5 +162,4 @@ class WalletController extends Controller
         // Redirect back with a success message
         return redirect()->back()->with('success', 'Money fill request submitted successfully!');
     }
-
 }

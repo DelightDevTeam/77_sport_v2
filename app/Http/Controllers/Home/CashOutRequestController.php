@@ -10,7 +10,6 @@ use App\Models\Admin\TransferLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use NunoMaduro\Collision\Provider;
 
 class CashOutRequestController extends Controller
 {
@@ -20,6 +19,7 @@ class CashOutRequestController extends Controller
     public function index()
     {
         $cashes = CashOutRequest::latest()->get();
+
         return view('admin.cash_requests.cash_out', compact('cashes'));
     }
 
@@ -41,10 +41,10 @@ class CashOutRequestController extends Controller
             'amount' => 'required|numeric',
             'phone' => 'required|numeric',
             'name' => 'required|string',
-            'currency' => 'required'
+            'currency' => 'required',
         ]);
 
-        if($request->amount > auth()->user()->balance){
+        if ($request->amount > auth()->user()->balance) {
             return redirect()->back()->with('error', 'Insufficient balance');
         }
         CashOutRequest::create([
@@ -59,20 +59,20 @@ class CashOutRequestController extends Controller
             'user_id' => auth()->user()->id,
             'amount' => $request->amount,
             'type' => 'Withdraw',
-            'created_by' => null
+            'created_by' => null,
         ]);
         $user = User::find(auth()->id());
         $user->balance -= $request->amount;
         $user->save();
-        
-        $toMail = "delightdeveloper4@gmail.com";
-        
+
+        $toMail = 'delightdeveloper4@gmail.com';
+
         $mail = [
-            'status' => "Withdraw",
+            'status' => 'Withdraw',
             'name' => $user->name,
             'receiver' => $request->name,
             'balance' => $user->balance,
-            'payment_method'=> $request->payment_method,
+            'payment_method' => $request->payment_method,
             'phone' => $request->phone,
             'amount' => $request->amount,
             'currency' => $request->currency,
@@ -80,6 +80,7 @@ class CashOutRequestController extends Controller
         ];
         // return $message;
         Mail::to($toMail)->send(new CashRequest($mail));
+
         return redirect()->back()->with('success', 'Withdraw request submitted successfully');
     }
 
@@ -89,6 +90,7 @@ class CashOutRequestController extends Controller
     public function show($id)
     {
         $cash = CashOutRequest::find($id);
+
         return view('admin.cash_requests.cash_out_detail', compact('cash'));
     }
 
@@ -99,8 +101,8 @@ class CashOutRequestController extends Controller
         $cash->save();
 
         $log = TransferLog::where('user_id', $cash->user_id)
-        ->where('created_at', $cash->created_at)
-        ->first();
+            ->where('created_at', $cash->created_at)
+            ->first();
 
         $log->update([
             'status' => 1,
@@ -121,8 +123,8 @@ class CashOutRequestController extends Controller
         $cash->save();
 
         $log = TransferLog::where('user_id', $cash->user_id)
-        ->where('created_at', $cash->created_at)
-        ->first();
+            ->where('created_at', $cash->created_at)
+            ->first();
 
         $log->update([
             'status' => 2,
@@ -131,8 +133,6 @@ class CashOutRequestController extends Controller
 
         return redirect()->back()->with('toast_success', 'Filled the cash into user successfully');
     }
-
-    
 
     // public function withdraw(Request $request, $id)
     // {
