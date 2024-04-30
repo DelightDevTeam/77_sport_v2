@@ -152,10 +152,7 @@ class User extends Authenticatable
     }
 
     // jackpot relationship
-    public function jackpots()
-    {
-        return $this->hasMany(Jackpot::class);
-    }
+   
 
     public function twodWiners()
     {

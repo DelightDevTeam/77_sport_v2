@@ -2,17 +2,14 @@
 
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\ProfileController;
-use App\Http\Controllers\Api\V1\TwoD\TwoPlayController;
 use App\Http\Controllers\Api\V1\Frontend\HomeController;
-use App\Http\Controllers\Api\V1\Frontend\TwoDController;
+use App\Http\Controllers\Api\V1\Frontend\PromotionController;
 use App\Http\Controllers\Api\V1\Frontend\ThreeDController;
+use App\Http\Controllers\Api\V1\Frontend\TwoDController;
+use App\Http\Controllers\Api\V1\Frontend\TwoDRemainingAmountController;
 use App\Http\Controllers\Api\V1\Frontend\WalletController;
 use App\Http\Controllers\Api\V1\ThreeD\ThreeDPlayController;
-use App\Http\Controllers\Api\V1\Frontend\PromotionController;
-use App\Http\Controllers\Api\V1\TwoD\OneWeekHistoryController;
-use App\Http\Controllers\Api\Jackpot\JackpotOneWeekGetDataController;
-use App\Http\Controllers\Api\V1\Frontend\TwoDRemainingAmountController;
-
+use App\Http\Controllers\Api\V1\TwoD\TwoPlayController;
 
 //publish routes
 Route::get('/login', [AuthController::class, 'loginData']);
