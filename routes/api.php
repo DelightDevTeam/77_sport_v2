@@ -2,15 +2,17 @@
 
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\ProfileController;
+use App\Http\Controllers\Api\V1\TwoD\TwoPlayController;
 use App\Http\Controllers\Api\V1\Frontend\HomeController;
-use App\Http\Controllers\Api\V1\Frontend\PromotionController;
-use App\Http\Controllers\Api\V1\Frontend\ThreeDController;
 use App\Http\Controllers\Api\V1\Frontend\TwoDController;
-use App\Http\Controllers\Api\V1\Frontend\TwoDRemainingAmountController;
+use App\Http\Controllers\Api\V1\Frontend\ThreeDController;
 use App\Http\Controllers\Api\V1\Frontend\WalletController;
 use App\Http\Controllers\Api\V1\ThreeD\ThreeDPlayController;
-use App\Http\Controllers\Api\V1\TwoD\TwoPlayController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\Frontend\PromotionController;
+use App\Http\Controllers\Api\V1\TwoD\OneWeekHistoryController;
+use App\Http\Controllers\Api\Jackpot\JackpotOneWeekGetDataController;
+use App\Http\Controllers\Api\V1\Frontend\TwoDRemainingAmountController;
+
 
 //publish routes
 Route::get('/login', [AuthController::class, 'loginData']);
@@ -94,8 +96,3 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // morning prize sent
     Route::get('/2d-moning-prize', [App\Http\Controllers\Api\V1\TwoD\MorningPrizeSentController::class, 'showPrizeSentData']);
 });
-
-// first prize winner
-// Route::get('/threed-first-winner-history', [App\Http\Controllers\Api\V1\ThreeD\WinnerHistoryController::class, 'firstPrizeWinner'])->name('ThreedfirstPrizeWinner');
-// Route::get('/threed-second-winner-history', [App\Http\Controllers\Api\V1\ThreeD\WinnerHistoryController::class, 'secondPrizeWinner'])->name('secondthreedPrizeWinner');
-//  Route::get('/threed-third-winner-history', [App\Http\Controllers\Api\V1\ThreeD\WinnerHistoryController::class, 'thirdPrizeWinner'])->name('thirdthreedPrizeWinner');

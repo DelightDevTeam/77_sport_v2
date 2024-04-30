@@ -19,15 +19,14 @@ class HomeController extends Controller
         $user = Auth::user();
         $banners = Banner::latest()->take(3)->get();
         $banner_text = BannerText::latest()->first();
-        $game_links = Game::latest()->get();
-        $rate = Currency::latest()->first()->rate;
-
+        // $game_links = Game::latest()->get();
+        // $rate = Currency::latest()->first()->rate;
         return $this->success([
             'user' => $user,
-            'banners' => $banners,
-            'banner_text' => $banner_text,
-            'game_links' => $game_links,
-            'rate' => $rate,
+            "banners" => $banners,
+            "banner_text" => $banner_text,
+            // "game_links" => $game_links,
+            // "rate" => $rate,
         ]);
     }
 }

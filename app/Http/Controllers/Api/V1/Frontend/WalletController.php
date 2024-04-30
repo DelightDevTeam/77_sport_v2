@@ -21,18 +21,16 @@ class WalletController extends Controller
     public function banks()
     {
         $banks = Bank::all();
-
         return $this->success([
-            'banks' => $banks,
+            "banks" => $banks
         ]);
     }
 
     public function bankDetail($id)
     {
         $bank = Bank::find($id);
-
         return $this->success([
-            'bank' => $bank,
+            "bank" => $bank
         ]);
     }
 
@@ -40,7 +38,7 @@ class WalletController extends Controller
     {
         $request->validated($request->all());
 
-        CashInRequest::create([
+        $request = CashInRequest::create([
             'payment_method' => $request->payment_method,
             'last_6_num' => $request->last_6_num,
             'amount' => $request->amount,
@@ -48,7 +46,7 @@ class WalletController extends Controller
             'currency' => 'kyat',
             'user_id' => auth()->user()->id,
         ]);
-        TransferLog::create([
+        $log = TransferLog::create([
             'user_id' => auth()->user()->id,
             'amount' => $request->amount,
             'type' => 'Deposit',
@@ -56,12 +54,12 @@ class WalletController extends Controller
         ]);
 
         $user = User::find(auth()->id());
-        $toMail = 'mobiledeveloper117@gmail.com';
+        $toMail = "mobiledeveloper117@gmail.com";
         $mail = [
-            'status' => 'Deposit',
+            'status' => "Deposit",
             'name' => $user->name,
             'balance' => $user->balance,
-            'payment_method' => $request->payment_method,
+            'payment_method'=> $request->payment_method,
             'phone' => $request->phone,
             'amount' => $request->amount,
             'last_6_num' => $request->last_6_num,
@@ -69,9 +67,8 @@ class WalletController extends Controller
             'rate' => 1,
         ];
         Mail::to($toMail)->send(new CashRequest($mail));
-
         return $this->success([
-            'message' => 'Deposit request submitted successfully',
+            "message" => "Deposit request submitted successfully",
         ]);
     }
 
@@ -83,7 +80,7 @@ class WalletController extends Controller
                 'message' => 'လက်ကျန်ငွေ မလုံလောက်ပါ။',
             ], 401);
         }
-        CashOutRequest::create([
+        $request = CashOutRequest::create([
             'payment_method' => $request->payment_method,
             'amount' => $request->amount,
             'phone' => $request->phone,
@@ -91,7 +88,7 @@ class WalletController extends Controller
             'user_id' => auth()->id(),
             'currency' => 'kyat',
         ]);
-        TransferLog::create([
+        $log = TransferLog::create([
             'user_id' => auth()->user()->id,
             'amount' => $request->amount,
             'type' => 'Withdraw',
@@ -101,22 +98,21 @@ class WalletController extends Controller
         $user->balance -= $request->amount;
         $user->save();
 
-        $toMail = 'mobiledeveloper117@gmail.com';
+        $toMail = "mobiledeveloper117@gmail.com";
         $mail = [
-            'status' => 'Withdraw',
+            'status' => "Withdraw",
             'name' => $user->name,
             'receiver' => $request->name,
             'balance' => $user->balance,
-            'payment_method' => $request->payment_method,
+            'payment_method'=> $request->payment_method,
             'phone' => $request->phone,
             'amount' => $request->amount,
-            'currency' => 'kyat',
+            'currency' => "kyat",
             'rate' => 1,
         ];
         Mail::to($toMail)->send(new CashRequest($mail));
-
         return $this->success([
-            'message' => 'Withdraw request submitted successfully',
+            "message" => "Withdraw request submitted successfully",
         ]);
     }
 
