@@ -33,7 +33,7 @@ class TwoDGameResultTableSeeder extends Seeder
                     $eveningStatus = $date->isToday() ? 'open' : 'closed';
 
                     // Morning session
-                    TwodSetting::create([
+                    TwodGameResult::create([
                         'result_date' => $date->format('Y-m-d'),
                         'result_time' => '12:01:00', // Morning open time
                         'session' => 'morning',
@@ -41,7 +41,7 @@ class TwoDGameResultTableSeeder extends Seeder
                     ]);
 
                     // Evening session
-                    TwodSetting::create([
+                    TwodGameResult::create([
                         'result_date' => $date->format('Y-m-d'),
                         'result_time' => '16:30:00', // Evening open time
                         'session' => 'evening',
