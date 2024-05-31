@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('lotto_three_digit_copy', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('result_date_id')->nullable();
+            $table->unsignedBigInteger('three_digit_id');
             $table->unsignedBigInteger('lotto_id');
             $table->unsignedBigInteger('user_id');
             $table->string('bet_digit');

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('lotto_three_digit_pivot', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('result_date_id')->nullable();
+            $table->unsignedBigInteger('three_digit_id');
             $table->unsignedBigInteger('lotto_id');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('bet_digit');
