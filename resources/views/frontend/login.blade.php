@@ -112,7 +112,7 @@
             <div class="login">
                 <button class="btn btn-login w-100 text-white text-center">အကောင့်၀င်မည်</button>
             </div>
-            <span class="text-center d-block mb-5">အကောင့်အသစ်ဖွင့်ရန် <a href="{{ url('/register') }}" class="text-decoration-underline">ဒီမှာနှိပ်ပါ</a></span>
+            {{-- <span class="text-center d-block mb-5">အကောင့်အသစ်ဖွင့်ရန် <a href="{{ url('/register') }}" class="text-decoration-underline">ဒီမှာနှိပ်ပါ</a></span> --}}
         </form>
     </div>
 </div>

@@ -16,7 +16,7 @@ class UsersTableSeeder extends Seeder
             [
                 'name' => 'Super Admin',
                 'country_code' => '+95',
-                'phone' => '09777710146',
+                'phone' => '09123456789',
                 'password' => '$2y$10$qyxYm.2dlaXROvs0OrGHseo4qbeissRMqNWdhlcr/vUqE62vN94Fi', // password
                 'remember_token' => null,
                 'created_at' => now(),
